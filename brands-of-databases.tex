@@ -1,23 +1,33 @@
+\title{Database management systems}
+
 \chapter{MySQL}
 http://www.datasciencecentral.com/profiles/blogs/history-of-mysql
 https://en.wikipedia.org/wiki/MySQL
+https://www.youtube.com/watch?v=iFUmdHjjon4
+- on architecture
+https://www.safaribooksonline.com/library/view/high-performance-mysql/9781449332471/ch01.html
 
 \section{What is it?}
-- relational database management system
+- relational database management system \(RDMS\)
 - open source
 - owend by Oracle at the moment
 - written in C and C++
-- quite fast and stable
+- quite popular though development has "stagnated" since it was taken over by Oracle
 
 \section{What is it used for?}
 - developed to have a "faster" interface than its mSQL system
 - redeveloped the SQL interface with the same access points as mSQL
 
 \section{How does it work?}
+- works as a standard RDMS
+- the general solution that it solves is having an easy access to all tables within the system, the access is provided via the SQL syntax
+- can scale out to different machines via sharding, different "parts" of a table are given to different instances to hold - enterprise editions support sharding automatically
+- isolates its data retrieval/storage processes from its querying processes - as a result you can easily plug in your own storage engine at the back
+- each request gets a "thread" and these requests are cached so future requests can reuse past requests
 
 \section{What does it work with?}
 - wide support for a variety of operating systems
-- wide support for a variety of languages (PHP, Java, C, C++, Perl, Python etc.)
+- wide support for a variety of languages \(PHP, Java, C, C++, Perl, Python etc.\)
 
 \section{What unique features does this have?}
 - wide support for a variety of operating systems
@@ -25,33 +35,46 @@ https://en.wikipedia.org/wiki/MySQL
 - has a community and a proprietary versions
 - quite widely used so that is a lot of support
 
-\chapter{NoSQL - not only SQL}
-- Trying to solve scalability
-- This is a classification of a type of databases - see MongoDB or Cassandra
-
-\section{What is it?}
-
-\section{What is it used for?}
-
-\section{How does it work?}
-
-\section{What does it work with?}
-
-\section{What unique features does this have?}
-
-
 \chapter{PostgreSQL}
 https://www.postgresql.org/
+https://en.wikipedia.org/wiki/PostgreSQL
+https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems
+- on architecture
+https://cisc322.files.wordpress.com/2010/10/conceptual_architecture_of_postgresql.pdf
+https://vladmihalcea.com/2017/03/01/how-does-mvcc-multi-version-concurrency-control-work/
+
+http://bajis-postgres.blogspot.com.au/2013/10/postgresql-architecture.html
 
 \section{What is it?}
+- object relational database management system (ORDMS)
+- transactional
+- open source
+- written in C
+- designed for "high volume environments"
 
 \section{What is it used for?}
+- according to the documentation - high volume environments
+- highly compliant with the SQL standard and enables concurrency without read locks
+- used when data integrity is a requirement \(ensuring that data is the same as when it goes in\)
+- can be built upon to provide custom functions and features
 
 \section{How does it work?}
+- process-based - one database session per CPU
+- uses MVCC - every read request is basically a "snapshot" of a table and is not locked when writing to the database
+- each entry has an insertion timestamp and a deletion timestamp - this enables the snapshots to take place should things get out of wack
+- note that you will need to "vacuum" up the deleted entries when the database is idle to release the space
 
 \section{What does it work with?}
+- support Java, C, C++, .Net, Perl, Python, Rub
 
 \section{What unique features does this have?}
+- concurrency control - AKA MVCC a core feature of PostgreSQL which provides concurrent read access without the need for "locks" on cells, it works by taking "snapshots" of the database at given time intervals when needed, note that this does introduce extra storage requirements for all of these "snapshots"
+- ACID compliant
+- asynchronous replication
+- point in time recovery
+- compliant to the SQL:2008 standard - most compliant
+- table inheritance
+- huge community support
 
 
 \chapter{MongoDB}
@@ -70,10 +93,56 @@ https://www.mongodb.com/nosql-explained
 
 \chapter{Cassandra}
 http://cassandra.apache.org/
+https://www.youtube.com/watch?v=0UA27d12urM
+https://www.youtube.com/watch?v=ZzFCfH8e3QA
+http://docs.datastax.com/en/dse/5.1/dse-arch/
+https://en.wikipedia.org/wiki/Apache_Cassandra
+http://vldb.org/pvldb/vol5/p1724_tilmannrabl_vldb2012.pdf
 
 \section{What is it?}
+- distributed database
+- keeps information spread out across multiple machines
+- need to think about data model first before you use it
+- built on Java
 
 \section{What is it used for?}
+- ensuring data is fault resistant
+- clusters can keep information up for long periods of time
+- generally used for things like banking
+- used for "transaction" - lots of concurrent traffic
+
+\section{How does it work?}
+- cassandra instances are usually placed in "clusters" or groups of other instances
+- each cassandra instance shares information (what they have) to each other, propagate changes to at least another node (dependong on the configuration) - this is called "gossip" - allows for state tracking
+- a "snitch" records the ip addresses to the physical locations of the instances
+- data replication can depend on the architecture that is being deployed, can have all nodes having everything or you can just have groups of instances having the same amount of data
+
+\section{What does it work with?}
+- Java
+- Python
+- Node
+- Go
+- C++
+
+\section{What unique features does this have?}
+- doesn't support table joins
+- can provide fast write operations
+- high availability
+- uses CQL instead of SQL
+
+\chapter{HBase}
+https://en.wikipedia.org/wiki/Apache_HBase
+
+
+\chapter{Microsoft Access}
+
+\section{What is it?}
+- relational database
+- doesn't scale very well
+
+\section{What is it used for?}
+- generally used for small local database instances
+- used for some microsoft products
 
 \section{How does it work?}
 
@@ -110,6 +179,20 @@ https://redis.io/
 \section{What unique features does this have?}
 
 
+\chapter{DB2}
+
+\section{What is it?}
+
+\section{What is it used for?}
+
+\section{How does it work?}
+
+\section{What does it work with?}
+
+\section{What unique features does this have?}
+
+
+
 \chapter{Flat file database}
 https://www.techopedia.com/definition/7231/flat-file-database-database
 https://en.wikipedia.org/wiki/Flat_file_database
@@ -134,5 +217,21 @@ https://en.wikipedia.org/wiki/Flat_file_database
 - flexible - can work with anything that can interpret plain text
 - can be very large
 
-\chapter{Overall comparison}
+\chapter{Overall comparison of database management systems}
 
+\title{Storage engines}
+https://mariadb.com/kb/en/mariadb/choosing-the-right-storage-engine/
+
+\chapter{InnoDB}
+https://dev.mysql.com/doc/refman/5.7/en/innodb-transaction-model.html
+
+- designed to combine "multi-versioning" and 2PL \(two phase locking\)
+- transaction database
+-
+
+\chapter{}
+
+\chapter{Other information}
+
+\section{Database vs Storage engine}
+- Storage engines, these are the actual data is stored in, the databases that were discussed above are a database management system
