@@ -24,6 +24,9 @@ https://www.safaribooksonline.com/library/view/high-performance-mysql/9781449332
 - can scale out to different machines via sharding, different "parts" of a table are given to different instances to hold - enterprise editions support sharding automatically
 - isolates its data retrieval/storage processes from its querying processes - as a result you can easily plug in your own storage engine at the back
 - each request gets a "thread" and these requests are cached so future requests can reuse past requests
+- uses read/write locks to prevent multiple users trying to access the same record
+- can apply a variety of different locks depending on the situation on the storage engine - table locks \(lock the whole table\) or row locks \(lock the whole record\)
+- live table modifications such as adding a new column will cause the table to be locked for the duration that the new column is being added
 
 \section{What does it work with?}
 - wide support for a variety of operating systems
@@ -79,17 +82,37 @@ http://bajis-postgres.blogspot.com.au/2013/10/postgresql-architecture.html
 
 \chapter{MongoDB}
 https://www.mongodb.com/nosql-explained
+https://en.wikipedia.org/wiki/MongoDB
+https://db-engines.com/en/system/MariaDB%3BMongoDB
+http://www.aptuz.com/blog/is-postgres-nosql-database-better-than-mongodb/
+- problems with mongodb
+http://developer.olery.com/blog/goodbye-mongodb-hello-postgresql/
 
 \section{What is it?}
+- type of NoSQL database
+- open source document-oriented database - classified as a "document store"
+- high availability - can defer writing to disk until later - though can lose information
+- developed by MongoDB Inc.
 
 \section{What is it used for?}
+- agile projects, relational databases don't scale well with agile development, each new requirement means a redeployment of a database schema to match the new requirements
+- naturally shard or spread data around to different servers
+- used with environments where concurrency is needed and data integrity and consistency \(issues with evolving data and schemaless structures\) aren't
 
 \section{How does it work?}
+- the database system is divided into a querying system, a virtual data model and then a storage engine
+- all data are stored as "documents" encoded into BSON \(Binary JSON\) - this is the data model
+- data for one application is generally kept together in a single "document"
+- the querying system can support JS queries
+- sharding occurs automatically - when certain nodes go down, it can automatically determine who will be the next "primary" node
 
 \section{What does it work with?}
+- supports: Java, .NET, NodeJS, Ruby, Javascript, Python, PHP etc.
 
 \section{What unique features does this have?}
-
+- does not support SQL
+- autosharding
+- information for a particular application is collected together as a "document" - makes it a lot easier to access information from a programmatic view
 
 \chapter{Cassandra}
 http://cassandra.apache.org/
@@ -100,7 +123,7 @@ https://en.wikipedia.org/wiki/Apache_Cassandra
 http://vldb.org/pvldb/vol5/p1724_tilmannrabl_vldb2012.pdf
 
 \section{What is it?}
-- distributed database
+- distributed database - classified as a "wide column store"
 - keeps information spread out across multiple machines
 - need to think about data model first before you use it
 - built on Java
@@ -132,39 +155,121 @@ http://vldb.org/pvldb/vol5/p1724_tilmannrabl_vldb2012.pdf
 
 \chapter{HBase}
 https://en.wikipedia.org/wiki/Apache_HBase
+https://hbase.apache.org/
+https://hortonworks.com/apache/hbase/
+https://mapr.com/blog/in-depth-look-hbase-architecture/
+https://www.dezyre.com/article/overview-of-hbase-architecture-and-its-components/295
 
+\section{What is it?}
+- non-relational distributed database - classified as a "wide-column store" - competes with Cassandra
+- open source
+- supported by Apache
+- built with Java
+- developed as part of Apache Hadoop - runs on top of HDFS \(Hadoop Distributed File System\)
+- does not natively support SQL but can have extensions which provide SQL functionality
+- more of a "data store" than a DBMS - missing some management features
+
+\section{What is it used for?}
+- works with Hadoop and provides storage for "sparse data"
+- Hadoop doesn't handle large amounts of reads and writes, HBase was developed to assist with this
+- created to provide real time \(or close to real time\) access to data in Hadoop - very fast random access
+- aims to hold large tables
+- strong consistency - all readers will see the same value
+- built-in recovery - via WAL
+- has some compliancy with SQL
+
+\section{How does it work?}
+- composed of three main components: Zookeeper, Region servers and HMaster
+- Region servers serve data for reads and writes
+- Zookeeper is for tracking the server state of each state of every Region server, including the HMaster servers
+- HMaster for coordinating region servers, administration and monitoring - ensuring that loads are distributed evenly across the regons
+- Zookeeper tracks the state via heartbeats
+- clients/users query the Zookeeper to get the Meta table which tells it about all the locations of the Region servers
+- Region servers use HDFS \(Hadoop Distributed File System\)
+- Region servers use WAL \(write ahead logs\) for new data, have a read cache called BlockCache, write cache called MemStore and stores data as Hfiles
+- WAL can be "replayed" as it contains the running log of database updates
+
+\section{What does it work with?}
+- works with: C, C#, C++, Java, PHP, Python, Scala, Groovy
+
+\section{What unique features does this have?}
+- auto sharding when things get to big, it automatically spreads out the data - region splitting - dividing a table in half and having two tables that contain two halves of a range
+- very fast access
 
 \chapter{Microsoft Access}
+https://msdn.microsoft.com/en-us/library/cc749861.aspx
+https://en.wikipedia.org/wiki/Microsoft_Access
+https://www.linkedin.com/pulse/20141204231202-292713093-microsoft-access-vs-microsoft-sql-server
+https://db-engines.com/en/system/Microsoft+Access%3BPostgreSQL
 
 \section{What is it?}
 - relational database
-- doesn't scale very well
+- works well with Microsoft products
+- can integrate with Microsoft SQL Server
+- it is not excel spreadsheet
+- can only store up to 2Gb per database
+- built with C++
+- commercial
 
 \section{What is it used for?}
 - generally used for small local database instances
 - used for some microsoft products
+- relational database maintained by Microsoft
+- originally developed to allow users to access data from anywhere, whether its ASCII or a SQL Server
 
 \section{How does it work?}
+- has a backend and a front end
+- backend is a Jet/Ace database engine - does the storing of information
+- front end is a RAD \(Rapid Application Development\) tool - interacts with db to generate reports
+- data is locked per row
 
 \section{What does it work with?}
+- VBA - Visual Basic for Applications
+- ODBC access via Jet/Ace database engine
+- ASP.NET
+- PHP
+- Java
 
 \section{What unique features does this have?}
-
+- only works for Windows
+- very easy to set up interactions with Access
 
 \chapter{Redis}
 https://redis.io/
-- key value store
+https://redislabs.com/why-redis/
+https://db-engines.com/en/system/PostgreSQL%3BRedis
+http://qnimate.com/overview-of-redis-architecture/
+https://redis.io/presentation/Redis_Cluster.pdf
+http://oldblog.antirez.com/post/MongoDB-and-Redis.html
 
 \section{What is it?}
+- open source managed by Redis Labs
+- an in-memory database that uses key-value store
+- a popular key-value database - categorised under NoSQL
+- built with C
 
 \section{What is it used for?}
+- generally used for caching, message queues
+- used by Twitter
+- fast read and write times \(since everything is in memory\) at the cost of more complicated queries
 
 \section{How does it work?}
+- all data is stored in memory \(RAM\)
+- access can be provided through snapshotting and semi-persistance via writing to disk from time to time
+- server side scripting via LUA
+- divided into two sections: redis client and redis server
+- redis client is how you interact with the redis server
+- redis server is where the data is stored
+- can set up a cluster of redis servers, the cluster nodes each talk to each other via pings \(hey there\) and pongs \(nice to meet you\)
 
 \section{What does it work with?}
+- C, C++, C#, Java, Javascript, etc.
 
 \section{What unique features does this have?}
-
+- can support Abstract Data Types
+- schema free
+- cannot store large data due to memory limitations
+- poor native recovery - if database crashes, since most of it is in memory, most of it will be lost
 
 \chapter{ObjectDB}
 
@@ -227,9 +332,20 @@ https://dev.mysql.com/doc/refman/5.7/en/innodb-transaction-model.html
 
 - designed to combine "multi-versioning" and 2PL \(two phase locking\)
 - transaction database
--
+- used in postgres
 
-\chapter{}
+\chapter{WiredTiger}
+
+- used in mongoDB
+
+\chapter{InMemory}
+
+
+\chapter{Microsoft Jet Database Engine}
+https://en.wikipedia.org/wiki/Microsoft_Jet_Database_Engine
+
+\chapter{MyISAM}
+
 
 \chapter{Other information}
 
