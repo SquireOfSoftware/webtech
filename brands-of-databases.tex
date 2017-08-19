@@ -49,7 +49,7 @@ https://vladmihalcea.com/2017/03/01/how-does-mvcc-multi-version-concurrency-cont
 http://bajis-postgres.blogspot.com.au/2013/10/postgresql-architecture.html
 
 \section{What is it?}
-- object relational database management system (ORDMS)
+- object relational database management system \(ORDMS\)
 - transactional
 - open source
 - written in C
@@ -121,6 +121,7 @@ https://www.youtube.com/watch?v=ZzFCfH8e3QA
 http://docs.datastax.com/en/dse/5.1/dse-arch/
 https://en.wikipedia.org/wiki/Apache_Cassandra
 http://vldb.org/pvldb/vol5/p1724_tilmannrabl_vldb2012.pdf
+https://medium.com/@mustwin/cassandra-from-a-relational-world-7bbdb0a9f1d
 
 \section{What is it?}
 - distributed database - classified as a "wide column store"
@@ -136,7 +137,7 @@ http://vldb.org/pvldb/vol5/p1724_tilmannrabl_vldb2012.pdf
 
 \section{How does it work?}
 - cassandra instances are usually placed in "clusters" or groups of other instances
-- each cassandra instance shares information (what they have) to each other, propagate changes to at least another node (dependong on the configuration) - this is called "gossip" - allows for state tracking
+- each cassandra instance shares information \(what they have\) to each other, propagate changes to at least another node (dependong on the configuration) - this is called "gossip" - allows for state tracking
 - a "snitch" records the ip addresses to the physical locations of the instances
 - data replication can depend on the architecture that is being deployed, can have all nodes having everything or you can just have groups of instances having the same amount of data
 
@@ -159,6 +160,7 @@ https://hbase.apache.org/
 https://hortonworks.com/apache/hbase/
 https://mapr.com/blog/in-depth-look-hbase-architecture/
 https://www.dezyre.com/article/overview-of-hbase-architecture-and-its-components/295
+http://www.infoworld.com/article/2610656/database/big-data-showdown--cassandra-vs--hbase.html
 
 \section{What is it?}
 - non-relational distributed database - classified as a "wide-column store" - competes with Cassandra
@@ -241,6 +243,7 @@ https://db-engines.com/en/system/PostgreSQL%3BRedis
 http://qnimate.com/overview-of-redis-architecture/
 https://redis.io/presentation/Redis_Cluster.pdf
 http://oldblog.antirez.com/post/MongoDB-and-Redis.html
+https://stackoverflow.com/questions/14989390/why-should-i-use-redis-when-i-have-postgresql-as-my-database-for-django
 
 \section{What is it?}
 - open source managed by Redis Labs
@@ -252,6 +255,8 @@ http://oldblog.antirez.com/post/MongoDB-and-Redis.html
 - generally used for caching, message queues
 - used by Twitter
 - fast read and write times \(since everything is in memory\) at the cost of more complicated queries
+- can be used in conjunction with persistent databases such as PostgreSQL - speeds up access and storing only when you need to
+- attempts to approach the data structure problem differently to that of databases like MongoDB
 
 \section{How does it work?}
 - all data is stored in memory \(RAM\)
@@ -261,6 +266,9 @@ http://oldblog.antirez.com/post/MongoDB-and-Redis.html
 - redis client is how you interact with the redis server
 - redis server is where the data is stored
 - can set up a cluster of redis servers, the cluster nodes each talk to each other via pings \(hey there\) and pongs \(nice to meet you\)
+- nodes in a cluster are very chatter and "gossip" about the state of one another to each other
+- can auto-shard if a particular key-value set gets too big
+- using a redis-trib to manage the cluster
 
 \section{What does it work with?}
 - C, C++, C#, Java, Javascript, etc.
@@ -272,35 +280,68 @@ http://oldblog.antirez.com/post/MongoDB-and-Redis.html
 - poor native recovery - if database crashes, since most of it is in memory, most of it will be lost
 
 \chapter{ObjectDB}
+http://www.objectdb.com/
+http://www.objectdb.com/java/jpa/persistence/managed
+https://stackoverflow.com/questions/5291950/is-objectdb-production-ready
+http://www.jpab.org/EclipseLink/PostgreSQL/server/ObjectDB/ObjectDB/server.html
 
 \section{What is it?}
+- object database for Java
+- written in Java
+- uses two standard Java APIs to interact with the database - JPA \(Java Persistence API\) or JDO \(Java Data Objects\)
+- standards are built into the database, so no external mapping is required since the mapping is made for you
 
 \section{What is it used for?}
+- provides a nice interface that hides SQL queries from the user
 
 \section{How does it work?}
+- works with Java out of the box, minimal database configurations are required for Java to talk to ObjectDB
+- all you need to do is set up the entity objects and library references and you can read and write to the database
+- very little information can be found on how it works
 
 \section{What does it work with?}
+- Java
 
 \section{What unique features does this have?}
+- works well with Java
+- minimal integration configurations required
 
-
-\chapter{DB2}
+\chapter{SQLite}
+https://en.wikipedia.org/wiki/SQLite
+https://db-engines.com/en/system/PostgreSQL%3BSQLite
+https://www.sqlite.org/arch.html
+https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems
+http://use-the-index-luke.com/blog/2014-05/what-i-learned-about-sqlite-at-a-postgresql-conference
 
 \section{What is it?}
+- an embedded relational database management system \(RDMS\)
+- public domain and open source
+- built with C
+- uses files to store data
 
 \section{What is it used for?}
+- generally used for embedded applications that require storage like web browsers
+- avoid using this if there needs to be multiple users or applications that reqauire high write volumes
+- "SQLite is a replacement for fopen"
 
 \section{How does it work?}
+- stores information into a file - one file per database
+- needs ODBC or JDBC to interact with the data
+- concurrent access is achieved by locking files
+- query statements are transformed into bytecode and then fed into a VM, which then talks to the appropriate OS environemnt to store data
 
 \section{What does it work with?}
+- works with: C, C++, Java, Javascript, Python, Ruby etc.
 
 \section{What unique features does this have?}
-
-
+- does not require a server to operate
+- database is basically a file that can be shared around
+- no user management
 
 \chapter{Flat file database}
 https://www.techopedia.com/definition/7231/flat-file-database-database
 https://en.wikipedia.org/wiki/Flat_file_database
+http://www.valentina-db.com/dokuwiki/doku.php?id=valentina:products:adk:v4rev:howto:databases_from_zero:what_is_in_a_database_and_why_excel_isnt_a_database
 
 \section{What is it?}
 - physical data model
@@ -324,17 +365,36 @@ https://en.wikipedia.org/wiki/Flat_file_database
 
 \chapter{Overall comparison of database management systems}
 
+- MySQL
+- PostgreSQL
+- MongoDB
+- Cassandra
+- HBase
+- Microsoft Access
+- Redis
+- SQLite
+
+
 \title{Storage engines}
 https://mariadb.com/kb/en/mariadb/choosing-the-right-storage-engine/
 
 \chapter{InnoDB}
 https://dev.mysql.com/doc/refman/5.7/en/innodb-transaction-model.html
+https://en.wikipedia.org/wiki/InnoDB
+https://www.percona.com/live/mysql-conference-2013/sessions/innodb-architecture-and-performance-optimization
 
 - designed to combine "multi-versioning" and 2PL \(two phase locking\)
 - transaction database
-- used in postgres
+- used in MySQL
+- all data is stored in "tablespace" and tablespace change must be accepted before recordi s overwritten
+- tablespace is never shrunk
+- can't downgrade once optional features such as separating directory, logs and tablespaces
+- has main thread to handle commands
+- has io threads to do reads, writes, inserting into the buffer, adding to the logs
+- has buffer pool which contains, database cache, insertion buffers, locks
 
 \chapter{WiredTiger}
+http://source.wiredtiger.com/2.6.0/architecture.html
 
 - used in mongoDB
 
